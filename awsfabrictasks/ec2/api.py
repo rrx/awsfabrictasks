@@ -30,10 +30,9 @@ def ec2_rsync_upload_command(instancewrapper, local_dir, remote_dir,
     object.
     """
     ssh_uri = instancewrapper.get_ssh_uri()
-    key_filename = instancewrapper.get_ssh_key_filename()
     extra_ssh_args = awsfab_settings.EXTRA_SSH_ARGS
     local_dir = rsyncformat_path(local_dir, sync_content)
-    rsync_cmd = ('rsync {rsync_args} -e "ssh -i {key_filename} {extra_ssh_args}" '
+    rsync_cmd = ('rsync {rsync_args} -e "ssh {extra_ssh_args}" '
                  '{local_dir} {ssh_uri}:{remote_dir}').format(**vars())
     return rsync_cmd
 
@@ -69,10 +68,9 @@ def ec2_rsync_download_command(instancewrapper, remote_dir, local_dir,
     object.
     """
     ssh_uri = instancewrapper.get_ssh_uri()
-    key_filename = instancewrapper.get_ssh_key_filename()
     extra_ssh_args = awsfab_settings.EXTRA_SSH_ARGS
     remote_dir = rsyncformat_path(remote_dir, sync_content)
-    rsync_cmd = ('rsync {rsync_args} -e "ssh -i {key_filename} {extra_ssh_args}" '
+    rsync_cmd = ('rsync {rsync_args} -e "ssh {extra_ssh_args}" '
                  '{ssh_uri}:{remote_dir} {local_dir}').format(**vars())
     return rsync_cmd
 
@@ -239,9 +237,9 @@ class Ec2InstanceWrapper(object):
         env['ec2instances'][self.get_ssh_uri()] = self
         if not env.key_filename:
             env.key_filename = []
-        key_filename = self.get_ssh_key_filename()
-        if not key_filename in env.key_filename:
-            env.key_filename.append(key_filename)
+        #key_filename = self.get_ssh_key_filename()
+        #if not key_filename in env.key_filename:
+        #    env.key_filename.append(key_filename)
 
     @classmethod
     def get_by_nametag(cls, instancename_with_optional_region):
